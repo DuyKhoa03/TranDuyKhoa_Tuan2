@@ -21,5 +21,7 @@ namespace TranDuyKhoa_Tuan2.Models
         [DisplayName("Mã loại sản phẩm")]
 
         public int CategoryId { get; set; }
+        public string? ImageUrl { get; set; }//Đường dẫn đến hình ảnh
+        public List<string>? ImageUrls { get; set; }// danh sách các hình ảnh khác
     }
 }

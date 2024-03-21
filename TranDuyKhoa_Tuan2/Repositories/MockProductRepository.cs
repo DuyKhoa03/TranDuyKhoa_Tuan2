@@ -17,6 +17,14 @@ namespace TranDuyKhoa_Tuan2.Repositories
                 Name = "laptop 2",
                 Price = 100022,
                 Description = "A high-end laptop 2"
+            },
+            new Product
+            {
+                Id = 3,
+                Name = "laptop 3",
+                Price = 100022,
+                Description = "A high-end laptop 3"
+                
             }
             };
         }

@@ -23,7 +23,7 @@ namespace TranDuyKhoa_Tuan2.Controllers
         [HttpPost]
         public IActionResult Add(Product product)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 _productRepository.Add(product);
                 return RedirectToAction("Index");
@@ -38,7 +38,7 @@ namespace TranDuyKhoa_Tuan2.Controllers
         public IActionResult Display(int id)
         {
             var product = _productRepository.GetById(id);
-            if(product == null)
+            if (product == null)
             {
                 return NotFound();
             }
@@ -46,6 +46,8 @@ namespace TranDuyKhoa_Tuan2.Controllers
         }
         public IActionResult Update(int id)
         {
+            var categories = _categoryRepository.GetAllCategories();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
             var product = _productRepository.GetById(id);
             if (product == null)
             {
@@ -66,17 +68,52 @@ namespace TranDuyKhoa_Tuan2.Controllers
         public IActionResult Delete(int id)
         {
             var product = _productRepository.GetById(id);
-            if(product == null)
+            if (product == null)
             {
                 return NotFound();
             }
             return View(product);
         }
-        [HttpPost,ActionName("Delete")]
+        [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
             _productRepository.Delete(id);
             return RedirectToAction("Index");
         }
+        [HttpPost("{product}")]
+        public async Task<IActionResult> Add(Product product,IFormFile imageUrl, List<IFormFile> ImageUrls)
+        {
+            if(ModelState.IsValid)
+            {
+                if(imageUrl!=null)
+                {
+                    //Luu hinh anh dai dien
+                    product.ImageUrl = await SaveImage(imageUrl);
+                }
+                if(ImageUrls!=null)
+                {
+                    product.ImageUrls = new List<string>();
+                    foreach(var file in ImageUrls)
+                    {
+                        //luu cac hinh anh khac
+                        product.ImageUrls.Add(await SaveImage(file));
+                    }
+                }
+                _productRepository.Add(product);
+                return RedirectToAction("Index");
+            }
+            return View(product);
+        }
+        private async Task<string> SaveImage(IFormFile image)
+        {
+            var savePath = Path.Combine("wwwroot/images", image.FileName);
+            using (var fileStream = new FileStream(savePath,FileMode.Create))
+            {
+                await image.CopyToAsync(fileStream);
+
+            }
+            return "/images/" + image.FileName;
+        }
     }
+   
 }
